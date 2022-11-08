@@ -1,0 +1,245 @@
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+
+
+  @import "http://fonts.googleapis.com/css?family=Roboto:300,400,500,700";
+
+  .container {
+    margin-top: 20px;
+  }
+
+  .mb20 {
+    margin-bottom: 20px;
+  }
+
+  hgroup {
+    padding-left: 15px;
+    border-bottom: 1px solid #ccc;
+  }
+
+  hgroup h1 {
+    font: 500 normal 1.625em "Roboto", Arial, Verdana, sans-serif;
+    color: #2a3644;
+    margin-top: 0;
+    line-height: 1.15;
+  }
+
+  hgroup h2.lead {
+    font: normal normal 1.125em "Roboto", Arial, Verdana, sans-serif;
+    color: #2a3644;
+    margin: 0;
+    padding-bottom: 10px;
+  }
+
+  .search-result .thumbnail {
+    /* border-radius: 0 !important; */
+    width: 15em;
+  }
+
+  .search-result:first-child {
+    margin-top: 0 !important;
+  }
+
+  .search-result {
+    margin-top: 20px;
+  }
+
+  .search-result .col-md-2 {
+    border-right: 1px dotted #ccc;
+    min-height: 140px;
+  }
+
+  .search-result ul {
+    padding-left: 0 !important;
+    list-style: none;
+  }
+
+  .search-result ul li {
+    font: 400 normal .85em "Roboto", Arial, Verdana, sans-serif;
+    line-height: 30px;
+  }
+
+  .search-result ul li i {
+    padding-right: 5px;
+  }
+
+  .search-result .col-md-7 {
+    position: relative;
+  }
+
+  .search-result h3 {
+    font: 500 normal 1.375em "Roboto", Arial, Verdana, sans-serif;
+    margin-top: 0 !important;
+    margin-bottom: 10px !important;
+  }
+
+  .search-result h3>a,
+  .search-result i {
+    color: #248dc1 !important;
+  }
+
+  .search-result p {
+    font: normal normal 1.125em "Roboto", Arial, Verdana, sans-serif;
+  }
+
+  .search-result span.plus {
+    position: absolute;
+    right: 0;
+    top: 126px;
+  }
+
+  .search-result span.plus a {
+    background-color: #248dc1;
+    padding: 5px 5px 3px 5px;
+  }
+
+  .search-result span.plus a:hover {
+    background-color: #414141;
+  }
+
+  .search-result span.plus a i {
+    color: #fff !important;
+  }
+
+  /* .search-result span.border {
+    display: block;
+    width: 97%;
+    margin: 0 15px;
+    border-bottom: 1px dotted #ccc;
+  } */
+
+  .search-result .meta-search li {
+    font-weight: 600;
+  }
+  .search-result .meta-search li > span{
+    font-weight: 100;
+  }
+
+  .highlight {
+    background-color: #a94442;
+    color: white;
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+
+
+</style>
+
+<html>
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <h1><img width="100" height="80" src="https://1000logos.net/wp-content/uploads/2020/08/MongoDB-Emblem.jpg" />Demo: MongoDB Atlas Vector Search on Product Images</h1>
+    </div>
+  </div>
+</div>
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-xs-1">
+      <div style="padding-left: 1px;">
+          <p>Product:</p>
+      </div>
+    </div>
+    <div class="col-xs-2">
+      <div style="padding-left: 5px;">
+        <div id="custom-search-input" class="input-group custom-search-form">
+          <input id="search_box" type="text" class="typeahead" placeholder="search by keyword">
+        </div><!-- /input-group -->
+      </div>
+    </div>
+    <div class="col-xs-1">
+      <button type="button" class="btn btn-success" id="search_button">Search</button>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <hgroup class="mb20">
+    <h1>Search Results</h1>
+    <h2 class="lead"><strong class="text-danger" id="result-count">0</strong> results were found for the search for <strong class="text-danger" id="search-query">_____</strong></h2>
+  </hgroup>
+
+  <section class="col-md-12" id="search-results-placholder"></section>
+</div>
+
+</html>
+
+
+<script src="https://twitter.github.io/typeahead.js/js/jquery-1.10.2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/corejs-typeahead/1.2.1/typeahead.bundle.min.js"></script>
+
+<script>
+
+    $("#search_box").keydown(function(e){
+    if(e.which === 13){
+        $("#search_button").click();
+    }
+    });  
+  
+    $('#search_button').click(function() {
+      var letters = $('#search_box').val();
+
+      $.ajax({
+          url: `/search?vector=${letters}&path=title`
+        }).done(function(results){
+          var jsonResults = JSON.parse(results).docs
+          console.log(jsonResults)
+          render(letters, jsonResults)
+        })
+        .fail(function(err) {
+          console.log(err)
+        });
+
+    });
+  
+
+
+  function render(letters, results) {
+    var placholder = $('#search-results-placholder');
+    placholder.empty();
+
+    // update count
+    $('#result-count').html(results.length)
+    // update search query
+    $('#search-query').html(letters)
+
+    let html = '';
+    $.each(results, function(index, item) {
+
+      let doc = item;
+      if (doc.poster == undefined) {
+        doc.poster = "{{ url_for('static',filename='no-picture.jpeg') }}"
+      }
+
+      html += `
+      <article class="search-result row">
+        <div class="col-md-3">
+          <div class="thumbnail"><img src="${doc.imageFile}" alt="Loading ..." /></div>
+        </div>
+        <div class="col-md-2">
+          <ul class="meta-search">
+            <li>Image File: <span>${doc.imageFile}</span></li>
+          </ul>
+        </div>
+        <div class="col-md-7 excerpet">
+          <li><strong>Price: </strong><span>$${doc.price}</span></li>
+          <li><strong>Average Rating: </strong><span>${doc.averageRating}</span></li>
+          <li><strong>Discount Percentage: </strong><span>${doc.discountPercentage}%</span></li>
+          <li><strong>Search score: </strong>${item.score}</li>
+        </div>
+        <span class="clearfix borda"></span>
+      </article>
+    `
+    });
+    // place in html
+    placholder.append(html);
+  }
+
+  $(document).ready(function() {
+    //search();
+  });
+</script>

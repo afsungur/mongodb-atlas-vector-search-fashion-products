@@ -1,0 +1,5 @@
+encoder/images/**
+
+**/__pycache__
+
+**/.DS_Store

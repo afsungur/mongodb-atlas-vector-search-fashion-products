@@ -24,11 +24,27 @@ It's very simple with Vector Search as shown in the below:
 
 - Download the image dataset from the Kaggle. 
     - First, download the low-resolution images to test everything correct (280MB): https://www.kaggle.com/datasets/paramaggarwal/fashion-product-images-small
-        - After you've downloaded the compressed file, extract the images under the `encoder/images/` folder. So the path should look like this: 
+        - After you've downloaded the compressed file, extract it somewhere. 
+        - After the compressed file extracted, move the following `images` folder, into the `encoder/` folder of this repository. 
+        - ![03](readme_images/fashion-folder.png)
+        - So the repository folders structure should look like this:
         - ![03](readme_images/03.png)
     - After you verify that everything works properly then you can download higher resolution images (25GB): https://www.kaggle.com/datasets/paramaggarwal/fashion-product-images-dataset 
 - MongoDB Atlas Cluster with the M10 tier in your preferred region
-- Python 3.9.2 along with pip
+- Execution was successful with the following dependencies
+  - Check the steps in the section [link][# Steps to Install and Test]
+  - Python 3.9.2 along with pip
+    - Following libraries will be required
+      - Flask==2.1.0
+      - Pillow==9.3.0
+      - pymongo==4.1.1
+      - sentence_transformers==2.2.2
+    - `requirements.txt` includes all the dependencies and if you want to install dependencies in one shot:
+      ```bash
+      pip install -r requirements.txt
+      ```
+
+
 
 # Steps to Install and Test
 

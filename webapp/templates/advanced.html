@@ -205,8 +205,8 @@
                 <div id="custom-search-input" class="input-group custom-search-form">
 
                     <input type="radio" id="relevancy" name="sortBy" value="relevancy" checked="checked"><label for="relevancy">More Relevant</label><br>
-                    <input type="radio" id="averageRating" name="sortBy" value="averageRating"><label for="averageRating">High Average Rating</label><br>
-                    <input type="radio" id="price" name="sortBy" value="price"><label for="price">Cheapest</label><br>
+                    <input type="radio" id="averageRating" name="sortBy" value="averageRating"><label for="averageRating">Higher Average Rating</label><br>
+                    <input type="radio" id="price" name="sortBy" value="price"><label for="price">Cheaper</label><br>
 
                 </div><!-- /input-group -->
             </div>
@@ -297,6 +297,7 @@
           <li><strong>Average Rating: </strong><span>${doc.averageRating}</span></li>
           <li><strong>Discount Percentage: </strong><span>${doc.discountPercentage}%</span></li>
           <li><strong>Search score: </strong>${item.score}</li>
+          <li><strong>Embeddings (only 5 dimensions displayed):</strong><span>[${doc.imageVector}...]</span></li>
         </div>
         <span class="clearfix borda"></span>
       </article>

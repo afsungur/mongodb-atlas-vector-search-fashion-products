@@ -2,8 +2,8 @@
 
 # Atlas Vector Search on Fashion Products
 
-How to make a search on the visual characteristic of the products that were not part of the metadata of the product? 
-Let me be more clear, you have millions of fashion products and you don't have color/category information of the product and you have the following simple data model:
+How can a search be conducted for the visual attributes of products that were not included in the product's metadata?
+To clarify further, imagine having millions of fashion products without any information about their color or category. You have the following basic data model:
 
 ```json
 {
@@ -14,8 +14,7 @@ Let me be more clear, you have millions of fashion products and you don't have c
 }
 ```
 
-And, our end users would like to make a search like "green shirts" and we want to return the products that the image (e.g. images/7475.jpg) represents a green shirt. 
-It's very simple with Vector Search as shown in the below:
+Furthermore, our users wish to perform a search such as "green shirts," and our objective is to retrieve the products where the corresponding image (e.g., images/7475.jpg) portrays a green shirt. This can be easily achieved using Vector Search, as demonstrated below:
 
 ![01](readme_images/01.png)
 ![02](readme_images/02.png)
@@ -23,9 +22,10 @@ It's very simple with Vector Search as shown in the below:
 # Prerequisites
 
 - Download the image dataset from the Kaggle. 
-    - First, download the low-resolution images to test everything correct (280MB): https://www.kaggle.com/datasets/paramaggarwal/fashion-product-images-small
+    - First, download the low-resolution images (280MB): https://www.kaggle.com/datasets/paramaggarwal/fashion-product-images-small
+        - We'll download the high-resolution images after we confirm encoding.
         - After you've downloaded the compressed file, extract it somewhere. 
-        - After the compressed file extracted, move the following `images` folder, into the `encoder/` folder of this repository. 
+        - After the compressed file extracted, move the following `images` folder into this repository's `encoder/` folder. 
         - ![03](readme_images/fashion-folder.png)
         - So the repository folders structure should look like this:
         - ![03](readme_images/03.png)

@@ -8,7 +8,7 @@ sys.path.insert(1, '../config/')
 from config_database import mongo_uri, db, collection
 
 preTrainedModelName = "clip-ViT-L-14"
-directoryThatIncludesImages ="images"
+directoryThatIncludesImages = (sys.argv[1])
 
 # number of worker threads to initialize that each thread encodes images in the folder concurrently
 NUM_OF_WORKERS=8

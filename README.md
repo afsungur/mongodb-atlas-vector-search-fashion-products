@@ -123,4 +123,20 @@ For advanced search (multiple conditions), navigate to `http://localhost:5010/ad
 And give it a try!
 ------------------
 
-![14](readme_images/14-socks-01.png)
+![](readme_images/720_demo01.gif)
+
+## Some Screenshots here:
+![07](readme_images/07-shoes-01.png)
+![08](readme_images/07-shoes-02.png)
+![09](readme_images/07-shoes-03.png)
+![10](readme_images/08-shirts-01.png)
+![11](readme_images/08-shirts-02.png)
+![12](readme_images/09.png)
+![13](readme_images/10-advanced-01.png)
+![14](readme_images/11-kids-01.png)
+![15](readme_images/12-bag-01.png)
+![16](readme_images/13-jeans-01.png)
+![17](readme_images/14-socks-01.png)
+![18](readme_images/15-bag-01.png)
+
+

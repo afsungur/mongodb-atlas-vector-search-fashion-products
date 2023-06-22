@@ -16,11 +16,11 @@ To clarify further, imagine having millions of fashion products without any info
 
 Furthermore, our users wish to perform a search such as **"green shirts"** and our objective is to retrieve the products where the corresponding image (e.g., images/7475.jpg) portrays a **green shirt**. This can be easily achieved using Vector Search.
 
-Look at the following search, on the right hand side you see an example record of a database, and it doesn't include the metadata such as the "color" of the product or "category" of the product, however our seach looks successful (our search matches the visual characteristics of the product).
+Consider this search query: On the right side, you'll find a sample entry from a database that lacks metadata like the product's "color" or "category." Nevertheless, our search appears to be successful as it matches the visual attributes of the product.
 
 ![01](readme_images/01.png)
 
-In simple words, given texts are converted into vectors on the application and sent to the data MongoDB Atlas and Atlas Search compares the vectors across the collection and find most similar vectors to the given vector.
+In simpler terms, the application transforms the given texts into vectors, which are then sent to MongoDB Atlas. Using Atlas Search, the system compares these vectors with those in the collection and identifies the most similar vectors to the given one.
 
 Another example:
 
@@ -101,7 +101,7 @@ It will download the pre-trained model first and then will create worker threads
 
 ![04](readme_images/04.png)
 
-The process may require a considerable amount of time, which is dependent on the hardware resources available on the machine. If the machine has 8 cores, it might take several hours to complete. The application itself is the limiting factor as it generates the embeddings for the images. Increasing the cluster size will not expedite this operation. This operation is not resumable, in other words, if somehow this loader crushes, it will start from scratch (by deleting data in the target collection).
+The process may require a considerable amount of time, which is dependent on the hardware resources available on the machine. If the machine has 8 cores, it might take several hours (3-4) to complete. The application itself is the limiting factor as it generates the embeddings for the images. Increasing the cluster size will not expedite this operation. This operation is not resumable, in other words, if somehow this loader crashes, it will start from scratch (by deleting data in the target collection).
 
 Once the process is finished, you can verify the collection using the instructions provided below.
 

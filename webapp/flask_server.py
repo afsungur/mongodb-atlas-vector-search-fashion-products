@@ -37,7 +37,11 @@ def search():
         },
         {
             "$project": {
-                "imageVector": 0,
+                "imageVector": {"$slice": ["$imageVector", 5]},
+                 "imageFile": 1,
+                "price": 1,
+                "discountPercentage": 1,
+                "averageRating" : 1,
                 "_id": 0,
                 'score': {
                     '$meta': 'searchScore'
@@ -58,9 +62,9 @@ def search():
 def searchAdvanced():
 
     vector_text = request.args.get('vector', default=None, type=str)
-    minRating = request.args.get('minRating', default=None, type=float)
-    minDiscount = request.args.get('minDiscount', default=None, type=float)
-    maximumPrice = request.args.get('maxPrice', default=None, type=float)
+    minRating = request.args.get('minRating', default=3, type=float)
+    minDiscount = request.args.get('minDiscount', default=5, type=float)
+    maximumPrice = request.args.get('maxPrice', default=75, type=float)
     sortBy = request.args.get('sortBy', default=None, type=str)
 
     print(f"Parameters: {vector_text}, {minRating}, {minDiscount}, {maximumPrice}, {sortBy}")
@@ -107,7 +111,11 @@ def searchAdvanced():
         },
         {
             "$project": {
-                "imageVector": 0,
+                "imageVector": {"$slice": ["$imageVector", 5]},
+                "imageFile": 1,
+                "price": 1,
+                "discountPercentage": 1,
+                "averageRating" : 1,
                 "_id": 0,
                 'score': {
                     '$meta': 'searchScore'

@@ -14,22 +14,29 @@ To clarify further, imagine having millions of fashion products without any info
 }
 ```
 
-Furthermore, our users wish to perform a search such as "green shirts," and our objective is to retrieve the products where the corresponding image (e.g., images/7475.jpg) portrays a green shirt. This can be easily achieved using Vector Search, as demonstrated below:
+Furthermore, our users wish to perform a search such as **"green shirts"** and our objective is to retrieve the products where the corresponding image (e.g., images/7475.jpg) portrays a **green shirt**. This can be easily achieved using Vector Search.
+
+Look at the following search, on the right hand side you see an example record of a database, and it doesn't include the metadata such as the "color" of the product or "category" of the product, however our seach looks successful (our search matches the visual characteristics of the product).
 
 ![01](readme_images/01.png)
+
+In simple words, given texts are converted into vectors on the application and sent to the data MongoDB Atlas and Atlas Search compares the vectors across the collection and find most similar vectors to the given vector.
+
+Another example:
+
 ![02](readme_images/02.png)
 
 # Prerequisites
 
-- Download the image dataset from the Kaggle. 
-    - First, download the low-resolution images (280MB): https://www.kaggle.com/datasets/paramaggarwal/fashion-product-images-small
-        - We'll download the high-resolution images after we confirm encoding.
-        - After you've downloaded the compressed file, extract it somewhere. 
-        - After the compressed file extracted, move the following `images` folder into this repository's `encoder/` folder. 
-        - ![03](readme_images/fashion-folder.png)
-        - So the repository folders structure should look like this:
-        - ![03](readme_images/03.png)
-    - After you verify that everything works properly then you can download higher resolution images (25GB): https://www.kaggle.com/datasets/paramaggarwal/fashion-product-images-dataset 
+- Download the image dataset from the Kaggle.
+  - First, download the product data set from Kaggle (25GB), [here ](https://www.kaggle.com/datasets/paramaggarwal/fashion-product-images-dataset)https://www.kaggle.com/datasets/paramaggarwal/fashion-product-images-small
+  - If you don't want to wait 25GB of data to be downloaded, you can download the lower size product dataset (600MB) [here](https://www.kaggle.com/datasets/paramaggarwal/fashion-product-images-small), that have lower resolution images.
+
+    - After you've downloaded the compressed file, extract it somewhere.
+    - After the compressed file extracted, move the following `images` folder (only this folder) into this repository's `encoder/` folder.
+    - ![03](readme_images/fashion-folder.png)
+    - So this repository folders structure should look like this:
+    - ![03](readme_images/03.png)
 - MongoDB Atlas Cluster with the M10 tier in your preferred region
 - Execution was successful with the following dependencies
   - Check the steps in the section [link][# Steps to Install and Test]
@@ -44,17 +51,15 @@ Furthermore, our users wish to perform a search such as "green shirts," and our 
       pip install -r requirements.txt
       ```
 
-
-
 # Steps to Install and Test
 
-## Configure database connection 
+## Configure database connection
 
-Modify the `config/config_database.py` file accordingly with the database connection string, database and collection information. 
+Please make the necessary changes to the `config/config_database.py` file by updating the database connection string, as well as the details of the database and collection.
 
 ## Create the Search Index
 
-Create the following search index on the collection that you configured in the config file:
+Please create the search index on the collection specified in the configuration file, and make sure to name the index as `default `. Use the following JSON for the index creation:
 
 ```json
 {
@@ -83,21 +88,22 @@ Create the following search index on the collection that you configured in the c
 
 ## Run Image Encoding and Store the Vector in the database
 
-Thousands of images have already been downloaded and we will run encoding on the application side and store the vector inside the database. 
+Thousands of images have already been downloaded (Kaggle dataset) and we will run encoding on the application side and store the vectors of these images inside the database.
 
 Switch to `encoder/` folder and make sure the `images/` folder includes the image files.
-And run the `encoder_and_loader.py` 
+And run the `encoder_and_loader.py`
 
 ```bash
 $ python encoder_and_loader.py
 ```
 
-It will download the pre-trained model first and then will create worker threads and these threads will go through all the files under the `images/` folder and load the vectors inside the MongoDB collection.
+It will download the pre-trained model first and then will create worker threads (It will run on 8 threads by default, you can configure this in the python file), and these threads will go through all the files under the `images/` folder and load the vectors inside the MongoDB collection.
 
 ![04](readme_images/04.png)
 
-It will take some time (depending on the hardware resources on the machine where you run it. With 8 cores it might take a few hours). 
-After it's completed, then verify the collection as shown in the below:
+The process may require a considerable amount of time, which is dependent on the hardware resources available on the machine. If the machine has 8 cores, it might take several hours to complete. The application itself is the limiting factor as it generates the embeddings for the images. Increasing the cluster size will not expedite this operation. This operation is not resumable, in other words, if somehow this loader crushes, it will start from scratch (by deleting data in the target collection).
+
+Once the process is finished, you can verify the collection using the instructions provided below.
 
 ![05](readme_images/05.png)
 
@@ -114,31 +120,7 @@ This web application has 2 pages:
 For a simple product search, open a browser and navigate to `http://localhost:5010/`.
 For advanced search (multiple conditions), navigate to `http://localhost:5010/advanced`.
 
-And give it a try! 
----
-![10](readme_images/10-advanced-01.png)
----
-![07-1](readme_images/07-shoes-01.png)
----
-![07-2](readme_images/07-shoes-02.png)
----
-![07-3](readme_images/07-shoes-03.png)
----
-![07-4](readme_images/07-shoes-04.png)
----
-![07-4](readme_images/15-bag-01.png)
----
-![09](readme_images/09.png)
----
-![11](readme_images/11-kids-01.png)
----
-![12](readme_images/12-bag-01.png)
----
-![13](readme_images/13-jeans-01.png)
----
+And give it a try!
+------------------
+
 ![14](readme_images/14-socks-01.png)
-
-
-
-
-

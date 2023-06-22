@@ -226,10 +226,12 @@
           </ul>
         </div>
         <div class="col-md-7 excerpet">
+          <li><strong>The data in the database:</strong></li>
           <li><strong>Price: </strong><span>$${doc.price}</span></li>
           <li><strong>Average Rating: </strong><span>${doc.averageRating}</span></li>
           <li><strong>Discount Percentage: </strong><span>${doc.discountPercentage}%</span></li>
           <li><strong>Search score: </strong>${item.score}</li>
+          <li><strong>Embeddings (only 5 dimensions displayed):</strong><span>[${doc.imageVector}...]</span></li>
         </div>
         <span class="clearfix borda"></span>
       </article>

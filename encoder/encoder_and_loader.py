@@ -28,6 +28,7 @@ for filename in os.listdir(directoryThatIncludesImages):
 
 
 def vectorize(imageFiles,threadNo):
+    number_of_files_processed = 0
     for f in imageFiles:
         if os.path.isfile(f):
             encoded = model.encode(Image.open(f)).tolist()
@@ -39,7 +40,9 @@ def vectorize(imageFiles,threadNo):
                 "averageRating": round(random.uniform(3.0, 5.0),2),
             }
             product_collection.insert_one(image)
-            print(f"Image file has been encoded and loaded into the database: {f}")
+            number_of_files_processed = number_of_files_processed + 1
+            remaining_number_of_files = len(imageFiles) - number_of_files_processed
+            print(f"[Thread no: {threadNo}][{remaining_number_of_files} files left] Image has been embedded as a vector in the document:{f}")
         
     return f"Thread number {threadNo} completed, {len(imageFiles)} files have been loaded"
 

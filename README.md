@@ -57,34 +57,39 @@ Another example:
 
 Please make the necessary changes to the `config/config_database.py` file by updating the database connection string, as well as the details of the database and collection.
 
-## Create the Search Index
+## Create the Vector Search Index
 
-Please create the search index on the collection specified in the configuration file, and make sure to name the index as `default `. Use the following JSON for the index creation:
+Please create the vector search index on the collection specified in the configuration file, and make sure to name the index as `vector_index `. Use the following JSON for the index creation:
 
 ```json
 {
-  "mappings": {
-    "fields": {
-      "imageVector": [
-        {
-          "dimensions": 768,
-          "similarity": "cosine",
-          "type": "knnVector"
-        }
-      ],
-      "price": {
-        "type": "number"
-      },
-      "averageRating": {
-         "type": "number"
-      },
-      "discountPercentage": {
-        "type": "number"
-      }
+  "fields": [
+    {
+      "type": "vector",
+      "path": "imageVector",
+      "numDimensions": 768,
+      "similarity": "cosine"
+    },
+    {
+      "type": "filter",
+      "path": "price"
+    },
+    {
+      "type": "filter",
+      "path": "averageRating"
+    },
+    {
+      "type": "filter",
+      "path": "discountPercentage"
     }
-  }
+  ]
 }
+
 ```
+Make sure the vector index has been created successfully.
+
+![04](readme_images/vector_index001.png)
+
 
 ## Run Image Encoding and Store the Vector in the database
 
@@ -126,6 +131,7 @@ And give it a try!
 ![](readme_images/720_demo01.gif)
 
 ## Some Screenshots here:
+
 ![07](readme_images/07-shoes-01.png)
 ![08](readme_images/07-shoes-02.png)
 ![09](readme_images/07-shoes-03.png)
@@ -138,5 +144,3 @@ And give it a try!
 ![16](readme_images/13-jeans-01.png)
 ![17](readme_images/14-socks-01.png)
 ![18](readme_images/15-bag-01.png)
-
-

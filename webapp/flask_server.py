@@ -26,25 +26,24 @@ def search():
     vector_query = model.encode(vector_text).tolist()
     pipeline = [
         {
-            "$search": {
-                "index": "default",
-                "knnBeta": {
-                    "vector": vector_query,
-                    "path": "imageVector",
-                    "k": 10
-                }
+            "$vectorSearch": {
+                "index": "vector_index",
+                "path": "imageVector",
+                "queryVector": vector_query,
+                "numCandidates": 200,
+                "limit": 10
             }
         },
         {
             "$project": {
                 "imageVector": {"$slice": ["$imageVector", 5]},
-                 "imageFile": 1,
+                "imageFile": 1,
                 "price": 1,
                 "discountPercentage": 1,
                 "averageRating" : 1,
                 "_id": 0,
                 'score': {
-                    '$meta': 'searchScore'
+                    '$meta': 'vectorSearchScore'
                 }
             }
         }
@@ -79,34 +78,25 @@ def searchAdvanced():
     vector_query = model.encode(vector_text).tolist()
     pipeline = [
         {
-            "$search": {
-                "index": "default",
-                "compound": {
-                    "filter": [
+            "$vectorSearch": {
+                "index": "vector_index",
+                "path": "imageVector",
+                "queryVector": vector_query,
+                "numCandidates": 200,
+                "limit": 10,
+                "filter": {
+                    "$and": [
                         {
-                            "range": {
-                                "path": "price",
-                                "lt": maximumPrice
-                            }
+                            "price": {'$lte': maximumPrice}
                         },
                         {
-                            "range": {
-                                "path": "averageRating",
-                                "gte": minRating
-                            }
-                        }
-                    ],
-                    "must": [
+                            "averageRating": {'$gte': minRating}
+                        },
                         {
-                            "knnBeta": {
-                                "vector": vector_query,
-                                "path": "imageVector",
-                                "k": 10
-                            }
+                            "discountPercentage": {'$gte': minDiscount}
                         }
                     ]
                 }
-                
             }
         },
         {
@@ -118,7 +108,7 @@ def searchAdvanced():
                 "averageRating" : 1,
                 "_id": 0,
                 'score': {
-                    '$meta': 'searchScore'
+                    '$meta': 'vectorSearchScore'
                 }
             }
         },

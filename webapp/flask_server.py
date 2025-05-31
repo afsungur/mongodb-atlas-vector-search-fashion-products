@@ -8,15 +8,16 @@ from bson import json_util
 import json
 
 sys.path.insert(1, '../config/')
-from config_database import mongo_uri, db, collection
+from config import mongo_uri, db, collection, sentence_transformers_text_model_name, number_of_dimensions
 
 app = Flask(__name__,             
-            static_url_path='', 
-            static_folder='../encoder',)
+            static_url_path='',
+            static_folder='../encoder/' 
+            )
             
 connection = pymongo.MongoClient(mongo_uri)
 product_collection = connection[db][collection]
-preTrainedModelName = "clip-ViT-L-14"
+preTrainedModelName = sentence_transformers_text_model_name
 model = SentenceTransformer(preTrainedModelName)
 
 @app.route('/search', methods=['GET'])
@@ -30,7 +31,7 @@ def search():
                 "index": "vector_index",
                 "path": "imageVector",
                 "queryVector": vector_query,
-                "numCandidates": 200,
+                "numCandidates": 1000,
                 "limit": 10
             }
         },

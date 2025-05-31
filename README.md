@@ -1,6 +1,4 @@
-# MongoDB Atlas Vector Search (Images) on Fashion Products
-
-# Atlas Vector Search on Fashion Products
+# Multi-Lingual MongoDB Vector Search (Images) on Fashion Products
 
 How can a search be conducted for the visual attributes of products that were not included in the product's metadata?
 To clarify further, imagine having millions of fashion products without any information about their color or category. You have the following basic data model:
@@ -16,6 +14,8 @@ To clarify further, imagine having millions of fashion products without any info
 
 Furthermore, our users wish to perform a search such as **"green shirts"** and our objective is to retrieve the products where the corresponding image (e.g., images/7475.jpg) portrays a **green shirt**. This can be easily achieved using Vector Search.
 
+[Multi-Lingual examples here ](#multi-lingual-search-results)([English](#english) | [Turkish](#turkish-red-tie) | [Italian](#italian-green-tie) | [Arabic](#arabic-blue-bag) | [Spanish](#spanish-green-bag)) | [French](#french-black-man-shoes)
+
 Consider this search query: On the right side, you'll find a sample entry from a database that lacks metadata like the product's "color" or "category." Nevertheless, our search appears to be successful as it matches the visual attributes of the product.
 
 ![01](readme_images/01.png)
@@ -26,87 +26,55 @@ Another example:
 
 ![02](readme_images/02.png)
 
-# Prerequisites
+## Image Repository
+- Kaggle provides a product data set catalogs:
+  - [Higher Resolution (25GB)](https://www.kaggle.com/datasets/paramaggarwal/fashion-product-images-dataset)
+  - [Lower Resolution (600MB)](https://www.kaggle.com/datasets/paramaggarwal/fashion-product-images-small)
+- If you have any other product catalog images, you can also leverage that.
+- **You extract the images under this encoder folder such as `encoder/images/`**
+  - You have jpg files such as `encoder/images/1.jpg`, `encode/images/abc.jpeg`
 
-- Download the image dataset from the Kaggle.
-  - First, download the product data set from Kaggle (25GB), [here ](https://www.kaggle.com/datasets/paramaggarwal/fashion-product-images-dataset)https://www.kaggle.com/datasets/paramaggarwal/fashion-product-images-small
-  - If you don't want to wait 25GB of data to be downloaded, you can download the lower size product dataset (600MB) [here](https://www.kaggle.com/datasets/paramaggarwal/fashion-product-images-small), that have lower resolution images.
+## Embedding Models
+There are 2 models evaluated.
+  - Default: [clip-ViT-L-14](https://huggingface.co/sentence-transformers/clip-ViT-L-14): Works very well for english language searches (768 dimensions)
+  - [sentence-transformers/clip-ViT-B-32](https://huggingface.co/sentence-transformers/clip-ViT-B-32): Works well for multi-lingual searches (512 dimensions)
 
-    - After you've downloaded the compressed file, extract it somewhere.
-    - After the compressed file extracted, move the following `images` folder (only this folder) into this repository's `encoder/` folder.
-    - ![03](readme_images/fashion-folder.png)
-    - So this repository folders structure should look like this:
-    - ![03](readme_images/03.png)
-- MongoDB Atlas Cluster with the M10 tier in your preferred region
-- Execution was successful with the following dependencies
-  - Check the steps in the section [link][# Steps to Install and Test]
-  - Python 3.9.2 along with pip
-    - Following libraries will be required
-      - Flask==2.1.0
-      - Pillow==9.3.0
-      - pymongo==4.1.1
-      - sentence_transformers==2.2.2
-    - `requirements.txt` includes all the dependencies and if you want to install dependencies in one shot:
-      ```bash
-      pip install -r requirements.txt
-      ```
+If you don't want to use the default one, please don't forget to change the number of dimensions too in the `config.py` file.
 
-# Steps to Install and Test
+## Prerequisites
 
-## Configure database connection
+- **Python Version**: Python 3.9 or later  
+- **Python Packages** (install with `pip install`):
+  - sentence-transformers  
+  - transformers  
+  - Pillow  
+  - pymongo  
+- **MongoDB**: MongoDB (Atlas or Enterprise Advanced or Community) with Vector Search enabled  
 
-Please make the necessary changes to the `config/config_database.py` file by updating the database connection string, as well as the details of the database and collection.
+## Configuration
 
-## Create the Vector Search Index
+- Database connection
+  - Please make the necessary changes to the `config/config.py` file by updating the database connection string, as well as the details of the database and collection.
+- Model
+  - Choose either multilingual or only-english model and don't forget to set proper number of dimensions in the `config.py` too
+    - Multi-lingual model encodes the images in 512 dimensions
 
-Please create the vector search index on the collection specified in the configuration file, and make sure to name the index as `vector_index `. Use the following JSON for the index creation:
+## Start Vectorization
 
-```json
-{
-  "fields": [
-    {
-      "type": "vector",
-      "path": "imageVector",
-      "numDimensions": 768,
-      "similarity": "cosine"
-    },
-    {
-      "type": "filter",
-      "path": "price"
-    },
-    {
-      "type": "filter",
-      "path": "averageRating"
-    },
-    {
-      "type": "filter",
-      "path": "discountPercentage"
-    }
-  ]
-}
+You have already extracted the images under this project structure such as `encoder/images/`.
 
-```
-Make sure the vector index has been created successfully.
-
-![04](readme_images/vector_index001.png)
-
-
-## Run Image Encoding and Store the Vector in the database
-
-Thousands of images have already been downloaded (Kaggle dataset) and we will run encoding on the application side and store the vectors of these images inside the database.
-
-Switch to `encoder/` folder and make sure the `images/` folder includes the image files.
-And run the `encoder_and_loader.py`
+Switch to `encoder/`
+And run the `encoder_and_loader.py` by providing the folder such as `images/`
 
 ```bash
-$ python encoder_and_loader.py
+$ python encoder_and_loader.py images/
 ```
 
-It will download the pre-trained model first and then will create worker threads (It will run on 8 threads by default, you can configure this in the python file), and these threads will go through all the files under the `images/` folder and load the vectors inside the MongoDB collection.
+It will download the pre-trained model first and then will create worker threads (It will run on 4 processes by default, you can configure this in the `config.py`), and these processes will go through all the files under the `images/` folder and load the vectors inside the MongoDB collection.
 
 ![04](readme_images/04.png)
 
-The process may require a considerable amount of time, which is dependent on the hardware resources available on the machine. If the machine has 8 cores, it might take several hours (3-4) to complete. The application itself is the limiting factor as it generates the embeddings for the images. Increasing the cluster size will not expedite this operation. This operation is not resumable, in other words, if somehow this loader crashes, it will start from scratch (by deleting data in the target collection).
+The process may require a considerable amount of time, which is dependent on the hardware resources available on this utility and database server distance.
 
 Once the process is finished, you can verify the collection using the instructions provided below.
 
@@ -130,17 +98,21 @@ And give it a try!
 
 ![](readme_images/720_demo01.gif)
 
-## Some Screenshots here:
+### Multi-Lingual Search Results
+- [English](#english) | [Turkish](#turkish-red-tie) | [English](#italian-green-tie) | [Arabic](#arabic-blue-bag) | [Spanish](#spanish-green-bag)
+#### English
+![](readme_images/200-english-kids-shoes.png)
+#### Turkish (Red Tie)
+![](readme_images/200-turkish-red-tie.png)
+#### Italian (Green Tie)
+![](readme_images/200-italian-green-tie.png)
+#### Arabic (Blue Bag)
+![](readme_images/200-arabic-blue-bag.png)
+#### Spanish (Green Bag)
+![](readme_images/200-spanish-green-bag.png)
+#### French (Black man shoes)
+![](readme_images/200-french-man-black-shoes.png)
 
-![07](readme_images/07-shoes-01.png)
-![08](readme_images/07-shoes-02.png)
-![09](readme_images/07-shoes-03.png)
-![10](readme_images/08-shirts-01.png)
-![11](readme_images/08-shirts-02.png)
-![12](readme_images/09.png)
-![13](readme_images/10-advanced-01.png)
-![14](readme_images/11-kids-01.png)
-![15](readme_images/12-bag-01.png)
-![16](readme_images/13-jeans-01.png)
-![17](readme_images/14-socks-01.png)
-![18](readme_images/15-bag-01.png)
+
+### Other Screenshots  
+[Other Screenshots](readme_images/README.md)

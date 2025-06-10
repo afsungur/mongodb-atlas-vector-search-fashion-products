@@ -69,7 +69,7 @@ def searchAdvanced():
 
     print(f"Parameters: {vector_text}, {minRating}, {minDiscount}, {maximumPrice}, {sortBy}")
 
-    sort = {"score": 1}
+    sort = {"score": -1}
 
     if (sortBy=="price"):
         sort = {"price":1}
